@@ -19,14 +19,14 @@ button:hover {
   cursor: pointer;
 }
 
-.input-area {
+/* .input-area {
   background: #c6e5e9;
   width: 400px;
   height: 30px;
   padding: 8px;
   margin: 8px;
   border-radius: 8px;
-}
+} */
 
 .incomplete-area {
   border: 2px solid #aacfd0;

@@ -1,19 +1,15 @@
 import { useState } from "react";
 import "./styles.css";
+import { InputTodo } from "./components/inputTodo";
+import { InCompleteTodo } from "./components/inCompleteTodo";
+import { CompleteTodo } from "./components/completeTodo";
 
 // named export形式
 export const Todo = () => {
   // 未完了のTODO
-  const [incompleteTodos, setIncompleteTodos] = useState([
-    "TODOです1",
-    "TODOです2",
-  ]);
+  const [incompleteTodos, setIncompleteTodos] = useState([]);
   // 完了のTODO
-  const [completeTodos, setcompleteTodos] = useState([
-    "TODOでした1",
-    "TODOでした2",
-  ]);
-
+  const [completeTodos, setcompleteTodos] = useState([]);
   // 入力された内容の取得
   const [todoText, setTodoText] = useState("");
 
@@ -28,48 +24,56 @@ export const Todo = () => {
     setTodoText("");
   };
 
+  // 削除ボタン
+  const onClickDelete = (index) => {
+    const newTodos = [...incompleteTodos];
+    // 特定の要素から何個削除するか?
+    newTodos.splice(index, 1);
+    setIncompleteTodos(newTodos);
+  };
+
+  // 完了ボタン
+  const onClickComplete = (index) => {
+    const newIncompleteTodos = [...incompleteTodos];
+    newIncompleteTodos.splice(index, 1);
+
+    const newCompleteTodos = [...completeTodos, incompleteTodos[index]];
+    setIncompleteTodos(newIncompleteTodos);
+    setcompleteTodos(newCompleteTodos);
+  };
+
+  // 戻すボタン
+  const onClickBack = (index) => {
+    const newCompleteTodos = [...completeTodos];
+    newCompleteTodos.splice(index, 1);
+
+    const newInCompleteTodos = [...incompleteTodos, completeTodos[index]];
+    setcompleteTodos(newCompleteTodos);
+    setIncompleteTodos(newInCompleteTodos);
+  };
+
+  // 登録数の判定
+  const disabled = incompleteTodos.length >= 5;
+
   return (
     <>
-      <div className="input-area">
-        <input
-          placeholder="TODOを入力"
-          value={todoText}
-          onChange={onChangeText}
-        ></input>
-        <button onClick={onClickAdd}>追加</button>
-      </div>
+      <InputTodo
+        todoText={todoText}
+        onChange={onChangeText}
+        onClick={onClickAdd}
+        disabled={disabled}
+      />
+      {disabled && (
+        <p style={{ color: "red" }}>登録できる上限は5個まで</p>
+      )}
 
-      <div className="incomplete-area">
-        <p className="title">未完了のTODO</p>
-        <ul>
-          {incompleteTodos.map((todo) => (
-            // 部分的にレンダリングする際に一つの要素にkey属性を指定すること
-            <li key={todo}>
-              <div className="list-row">
-                <p className="todo-item">{todo}</p>
-                <button>完了</button>
-                <button>削除</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <InCompleteTodo
+        todos={incompleteTodos}
+        onClickComplete={onClickComplete}
+        onClickDelete={onClickDelete}
+      />
 
-      <div className="complete-area">
-        <p className="title">完了のTODO</p>
-        <ul>
-          {completeTodos.map((todo) => (
-            // 部分的にレンダリングする際に一つの要素にkey属性を指定すること
-            <li key={todo}>
-              <div className="list-row">
-                <p className="todo-item">{todo}</p>
-                <button>完了</button>
-                <button>削除</button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <CompleteTodo todos={completeTodos} onClickBack={onClickBack} />
     </>
   );
 };
